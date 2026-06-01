@@ -46,7 +46,12 @@ export default defineConfig({
         }
     },
     server: {
-        proxy: {},
+        proxy: {
+            '/api': {
+                target,
+                secure: false,
+            }
+        },
         port: parseInt(env.DEV_SERVER_PORT || '50990'),
         https: {
             key: fs.readFileSync(keyFilePath),
