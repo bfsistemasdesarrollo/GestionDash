@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="gestiondash.client/gestiondash.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="GestionDash.Server/GestionDash.Server.csproj" />
+</Solution>
