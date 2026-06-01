@@ -1,6 +1,3 @@
 @GestionDash.Server_HostAddress = http://localhost:5151
 
-GET {{GestionDash.Server_HostAddress}}/weatherforecast/
-Accept: application/json
-
 ###
