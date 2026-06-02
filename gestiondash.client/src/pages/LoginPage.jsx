@@ -72,7 +72,7 @@ export default function LoginPage() {
                 <div className="relative z-10 flex flex-col items-center text-center">
                     {/* Ícono */}
                     <div className="w-28 h-28 mb-8 flex items-center justify-center">
-                        <img src="/dashboard-icon.png" alt="GestionDash"/>
+                        <img src="/dashboard-icon.png" alt="GestionDash" />
                     </div>
 
                     <div className="text-white text-3xl font-bold tracking-tight mb-3">
@@ -81,9 +81,7 @@ export default function LoginPage() {
 
                     <div className="text-white text-lg tracking-tight mb-3">
                         Potencie la gestión de su empresa
-                    </div> 
-
-
+                    </div>
                 </div>
             </div>
 
@@ -98,7 +96,7 @@ export default function LoginPage() {
                         >
                             <img src="/dashboard-icon.png" alt="" className="w-10 h-10" />
                         </div>
-                        <span className="text-xl font-bold text-gray-900">Gestion Dashboard</span>
+                        <span className="text-xl font-bold text-gray-900">Gestión Dashboard</span>
                     </div>
 
                     <Card className="shadow-xl border-0 bg-white">
@@ -124,22 +122,12 @@ export default function LoginPage() {
                                         placeholder=" "
                                         className="peer h-11"
                                     />
-
                                     <Label
                                         htmlFor="usuMail"
-                                        className="
-          absolute left-3 bg-background px-1
-          text-gray-500 transition-all duration-200
-          pointer-events-none
-          peer-placeholder-shown:top-3
-          peer-placeholder-shown:text-base
-          peer-placeholder-shown:text-gray-400
-          peer-focus:-top-2
-          peer-focus:text-xs
-          peer-focus:text-violet-600
-          top-[-8px]
-          text-xs
-        "
+                                        className="absolute left-3 bg-background px-1 text-gray-300 transition-all duration-200 pointer-events-none
+                                            peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400
+                                            peer-focus:-top-2 peer-focus:text-xs peer-focus:text-violet-600
+                                            top-[-8px] text-xs"
                                     >
                                         Correo electrónico
                                     </Label>
@@ -156,19 +144,14 @@ export default function LoginPage() {
                                         value={form.usuCla}
                                         onChange={handleChange}
                                         placeholder=" "
-                                        className="peer h-11"
+                                        className="peer h-11 mt-6"
                                     />
-
                                     <Label
                                         htmlFor="usuCla"
-                                        className="absolute left-3 bg-background px-1 text-gray-500 transition-all duration-200 pointer-events-none peer-placeholder-shown:top-3 peer-placeholder-shown:text-base
-          peer-placeholder-shown:text-gray-400
-          peer-focus:-top-2
-          peer-focus:text-xs
-          peer-focus:text-violet-600
-          top-[-8px]
-          text-xs
-        "
+                                        className="absolute left-3 bg-background px-1 text-gray-500 transition-all duration-200 pointer-events-none
+                                            peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400
+                                            peer-focus:-top-2 peer-focus:text-xs peer-focus:text-violet-600
+                                            top-[-8px] text-xs"
                                     >
                                         Contraseña
                                     </Label>
