@@ -51,7 +51,7 @@ public class AuthController : ControllerBase
         if (string.IsNullOrWhiteSpace(request.UsuMail) || string.IsNullOrWhiteSpace(request.UsuCla))
             return BadRequest(new { message = "Usuario y contraseña son requeridos." });
 
-        var hashedPassword = HashMd5(request.UsuCla);
+        var hashedPassword = HashMd5(request.UsuCla)[..6]; // Cortamos el hash generado para comparar con el almacenado en la BD.
 
         var usuario = await _db.Usuarios
             .FirstOrDefaultAsync(u => u.UsuMail == request.UsuMail && u.UsuCla == hashedPassword);
