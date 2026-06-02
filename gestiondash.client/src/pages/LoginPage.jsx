@@ -71,41 +71,25 @@ export default function LoginPage() {
 
                 <div className="relative z-10 flex flex-col items-center text-center">
                     {/* Ícono */}
-                    <div className="w-28 h-28 mb-8 rounded-3xl flex items-center justify-center shadow-2xl"
-                        style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.25)' }}>
-                        <img src="/dashboard-icon.png" alt="GestionDash" className="w-20 h-20 drop-shadow-md" />
+                    <div className="w-28 h-28 mb-8 flex items-center justify-center">
+                        <img src="/dashboard-icon.png" alt="GestionDash"/>
                     </div>
 
-                    <div className="text-white text-4xl font-bold tracking-tight mb-3">
-                        GestionDash
-                    </div>
-                    <div className="text-purple-200 text-base leading-relaxed max-w-xs">
-                        Sistema de gestión empresarial integrado
+                    <div className="text-white text-3xl font-bold tracking-tight mb-3">
+                        Gestión Dashboard
                     </div>
 
-                    {/* Módulos */}
-                    <div className="mt-12 grid grid-cols-3 gap-3 w-full max-w-xs">
-                        {[
-                            { label: 'Ventas', emoji: '📊' },
-                            { label: 'Clientes', emoji: '👥' },
-                            { label: 'Artículos', emoji: '📦' },
-                        ].map(({ label, emoji }) => (
-                            <div
-                                key={label}
-                                className="rounded-xl p-3 text-center"
-                                style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}
-                            >
-                                <span className="text-xl">{emoji}</span>
-                                <div className="text-white/80 text-xs mt-1">{label}</div>
-                            </div>
-                        ))}
-                    </div>
+                    <div className="text-white text-lg tracking-tight mb-3">
+                        Potencie la gestión de su empresa
+                    </div> 
+
+
                 </div>
             </div>
 
             {/* Panel derecho — formulario */}
             <div className="flex-1 flex items-center justify-center p-6 bg-gray-50">
-                <div className="w-full max-w-sm">
+                <div className="w-full max-w-lg">
                     {/* Logo mobile */}
                     <div className="lg:hidden flex flex-col items-center mb-8">
                         <div
@@ -114,22 +98,21 @@ export default function LoginPage() {
                         >
                             <img src="/dashboard-icon.png" alt="" className="w-10 h-10" />
                         </div>
-                        <span className="text-xl font-bold text-gray-900">GestionDash</span>
+                        <span className="text-xl font-bold text-gray-900">Gestion Dashboard</span>
                     </div>
 
                     <Card className="shadow-xl border-0 bg-white">
                         <CardHeader className="pb-4">
-                            <CardTitle className="text-2xl font-bold text-gray-900">Bienvenido</CardTitle>
-                            <CardDescription>
+                            <CardTitle className="text-2xl font-bold text-gray-900 text-center">Bienvenido</CardTitle>
+                            <CardDescription className="text-center">
                                 Ingrese sus credenciales para continuar
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-4">
-                                <div className="space-y-1.5">
-                                    <Label htmlFor="usuMail" className="text-gray-700">
-                                        Correo electrónico
-                                    </Label>
+
+                                {/* Email */}
+                                <div className="relative">
                                     <Input
                                         id="usuMail"
                                         name="usuMail"
@@ -138,15 +121,32 @@ export default function LoginPage() {
                                         required
                                         value={form.usuMail}
                                         onChange={handleChange}
-                                        placeholder="usuario@empresa.com"
-                                        className="h-11"
+                                        placeholder=" "
+                                        className="peer h-11"
                                     />
+
+                                    <Label
+                                        htmlFor="usuMail"
+                                        className="
+          absolute left-3 bg-background px-1
+          text-gray-500 transition-all duration-200
+          pointer-events-none
+          peer-placeholder-shown:top-3
+          peer-placeholder-shown:text-base
+          peer-placeholder-shown:text-gray-400
+          peer-focus:-top-2
+          peer-focus:text-xs
+          peer-focus:text-violet-600
+          top-[-8px]
+          text-xs
+        "
+                                    >
+                                        Correo electrónico
+                                    </Label>
                                 </div>
 
-                                <div className="space-y-1.5">
-                                    <Label htmlFor="usuCla" className="text-gray-700">
-                                        Contraseña
-                                    </Label>
+                                {/* Password */}
+                                <div className="relative">
                                     <Input
                                         id="usuCla"
                                         name="usuCla"
@@ -155,9 +155,23 @@ export default function LoginPage() {
                                         required
                                         value={form.usuCla}
                                         onChange={handleChange}
-                                        placeholder="••••••••"
-                                        className="h-11"
+                                        placeholder=" "
+                                        className="peer h-11"
                                     />
+
+                                    <Label
+                                        htmlFor="usuCla"
+                                        className="absolute left-3 bg-background px-1 text-gray-500 transition-all duration-200 pointer-events-none peer-placeholder-shown:top-3 peer-placeholder-shown:text-base
+          peer-placeholder-shown:text-gray-400
+          peer-focus:-top-2
+          peer-focus:text-xs
+          peer-focus:text-violet-600
+          top-[-8px]
+          text-xs
+        "
+                                    >
+                                        Contraseña
+                                    </Label>
                                 </div>
 
                                 {error && (
@@ -172,11 +186,11 @@ export default function LoginPage() {
                                     disabled={loading}
                                     style={{
                                         background: loading
-                                            ? '#c084fc'
-                                            : 'linear-gradient(135deg, #aa3bff 0%, #7b1ed6 100%)',
+                                            ? "#c084fc"
+                                            : "linear-gradient(135deg, #aa3bff 0%, #7b1ed6 100%)",
                                     }}
                                 >
-                                    {loading ? 'Ingresando...' : 'Ingresar'}
+                                    {loading ? "Ingresando..." : "Ingresar"}
                                 </Button>
                             </form>
                         </CardContent>

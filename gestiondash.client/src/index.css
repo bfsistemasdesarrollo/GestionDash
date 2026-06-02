@@ -50,7 +50,7 @@
 }
 
 :root {
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --sans: 'Poppins', system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
   font-family: var(--sans);

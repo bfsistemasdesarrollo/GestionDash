@@ -11,10 +11,10 @@ const navItems = [
 ];
 
 const statCards = [
-    { label: 'Ventas del día',      value: '—', emoji: '📈', color: '#aa3bff' },
-    { label: 'Clientes activos',    value: '—', emoji: '👥', color: '#3b82f6' },
-    { label: 'Artículos en stock',  value: '—', emoji: '📦', color: '#10b981' },
-    { label: 'Movimientos hoy',     value: '—', emoji: '🔄', color: '#f59e0b' },
+    { label: 'Ventas del día',      value: '—', emoji: '📈' },
+    { label: 'Clientes activos',    value: '—', emoji: '👥' },
+    { label: 'Artículos en stock',  value: '—', emoji: '📦' },
+    { label: 'Movimientos hoy',     value: '—', emoji: '🔄' },
 ];
 
 export default function DashboardPage() {
@@ -28,13 +28,10 @@ export default function DashboardPage() {
             <header className="h-14 shrink-0 border-b border-gray-200 bg-white flex items-center px-5 gap-3">
                 {/* Marca */}
                 <div className="flex items-center gap-2.5 mr-4">
-                    <div
-                        className="w-8 h-8 rounded-lg flex items-center justify-center shadow-sm"
-                        style={{ background: 'linear-gradient(135deg, #aa3bff, #7b1ed6)' }}
-                    >
-                        <img src="/dashboard-icon.png" alt="" className="w-5 h-5" />
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+                        <img src="/dashboard-icon.png" alt="" className="w-8 h-8" />
                     </div>
-                    <span className="font-bold text-gray-900 text-sm tracking-tight">GestionDash</span>
+                    <span className="font-bold text-gray-900 text-sm tracking-tight">Gestión Dashboard</span>
                 </div>
 
                 {/* Nav */}
@@ -80,26 +77,6 @@ export default function DashboardPage() {
 
             {/* Contenido principal */}
             <main className="flex-1 bg-gray-50 p-6 overflow-auto">
-                {/* Banner de bienvenida */}
-                <div
-                    className="rounded-2xl p-7 mb-6 flex items-center justify-between"
-                    style={{ background: 'linear-gradient(135deg, #aa3bff 0%, #7b1ed6 100%)' }}
-                >
-                    <div>
-                        <div className="text-white text-2xl font-bold mb-1">
-                            Hola, {user?.usuNom} 👋
-                        </div>
-                        <div className="text-purple-200 text-sm">
-                            Bienvenido a GestionDash. ¿Qué vas a gestionar hoy?
-                        </div>
-                    </div>
-                    <img
-                        src="/dashboard-icon.png"
-                        alt=""
-                        className="w-16 h-16 opacity-80 hidden sm:block"
-                    />
-                </div>
-
                 {/* Tarjetas de métricas */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {statCards.map(({ label, value, emoji, color }) => (
