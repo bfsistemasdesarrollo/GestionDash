@@ -1,8 +1,13 @@
 import { fileURLToPath, URL } from 'node:url';
+import { createRequire } from 'node:module';
 
 import { defineConfig } from 'vite';
 import plugin from '@vitejs/plugin-react';
 import fs from 'fs';
+
+const require = createRequire(import.meta.url);
+const tailwindcss = require('tailwindcss');
+const autoprefixer = require('autoprefixer');
 import path from 'path';
 import child_process from 'child_process';
 import { env } from 'process';
@@ -40,6 +45,14 @@ const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_H
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [plugin()],
+    css: {
+        postcss: {
+            plugins: [
+                tailwindcss({ config: './tailwind.config.cjs' }),
+                autoprefixer(),
+            ],
+        },
+    },
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))
