@@ -10,108 +10,105 @@ using System.Text;
 
 namespace GestionDash.Server.Controllers;
 
+// Ruta base: /api/auth
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
+    // AppDbContext para consultar la tabla de usuarios en SQL Server
     private readonly AppDbContext _db;
+    // IConfiguration para leer los valores de JWT desde appsettings.json
     private readonly IConfiguration _config;
 
+    // Los servicios se inyectan automáticamente por el contenedor de dependencias de ASP.NET
     public AuthController(AppDbContext db, IConfiguration config)
     {
         _db = db;
         _config = config;
     }
 
-    [HttpGet("debug/{email}")]
-    public async Task<IActionResult> Debug(string email)
-    {
-        if (!HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment())
-            return NotFound();
-
-        var usuario = await _db.Usuarios.FirstOrDefaultAsync(u => u.UsuMail == email);
-        if (usuario == null)
-            return NotFound(new { message = "Usuario no encontrado con ese mail." });
-
-        var md5de1 = HashMd5("1");
-        return Ok(new
-        {
-            usuMailEncontrado = usuario.UsuMail,
-            usuClaAlmacenada = usuario.UsuCla,
-            longitudUsuCla = usuario.UsuCla.Length,
-            md5De1 = md5de1,
-            coincide = usuario.UsuCla == md5de1,
-            esTextoPlano1 = usuario.UsuCla == "1"
-        });
-    }
-
+    // POST /api/auth/login
+    // Recibe email y contraseña en texto plano, los valida contra la BD y devuelve un JWT.
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
+        // Validación para que ninguno de los dos campos puede estar vacío
         if (string.IsNullOrWhiteSpace(request.UsuMail) || string.IsNullOrWhiteSpace(request.UsuCla))
             return BadRequest(new { message = "Usuario y contraseña son requeridos." });
 
-        var hashedPassword = HashMd5(request.UsuCla)[..6]; // Cortamos el hash generado para comparar con el almacenado en la BD.
+        // La BD almacena los primeros 6 caracteres del MD5.
+        var hashedPassword = HashMd5(request.UsuCla)[..6];
 
+        // Busca el usuario que coincida exactamente en email Y contraseña hasheada
         var usuario = await _db.Usuarios
             .FirstOrDefaultAsync(u => u.UsuMail == request.UsuMail && u.UsuCla == hashedPassword);
 
+        // Si no existe ninguna coincidencia, las credenciales son incorrectas
         if (usuario == null)
             return Unauthorized(new { message = "Credenciales incorrectas." });
 
+        // Credenciales válidas: genera el JWT con los datos del usuario
         var token = GenerateJwtToken(usuario);
 
+        // Devuelve el token y los datos del usuario que el frontend guardará en localStorage
         return Ok(new LoginResponse
         {
-            Token = token,
-            UsuCod = usuario.UsuCod,
-            UsuNom = usuario.UsuNom,
-            UsuNomLar = usuario.UsuNomLar,
-            UsuMail = usuario.UsuMail,
-            SgruCod = usuario.SgruCod
+            Token      = token,
+            UsuCod     = usuario.UsuCod,
+            UsuNom     = usuario.UsuNom,
+            UsuNomLar  = usuario.UsuNomLar,
+            UsuMail    = usuario.UsuMail,
+            SgruCod    = usuario.SgruCod
         });
     }
 
+    // Genera el hash MD5 de un string y lo devuelve en hexadecimal minúscula (32 chars).
     private static string HashMd5(string value)
     {
         var result = "";
         try
         {
             using var md5 = MD5.Create();
-            var data = Encoding.UTF8.GetBytes(value);
-            data = md5.ComputeHash(data);
+            var data = Encoding.UTF8.GetBytes(value); 
+            data = md5.ComputeHash(data);             
             for (int i = 0; i < data.Length; i++)
-                result += data[i].ToString("x2").ToLower();
+                result += data[i].ToString("x2").ToLower(); 
         }
         catch { }
         return result;
     }
 
+    // Construye y firma el JWT que se enviará al frontend.
+    // El token contiene los datos del usuario como claims y expira según appsettings.json.
     private string GenerateJwtToken(Models.Usuario usuario)
     {
-        var jwt = _config.GetSection("Jwt");
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var expiry = DateTime.UtcNow.AddHours(int.Parse(jwt["ExpiryHours"]!));
+        var jwt = _config.GetSection("Jwt"); // Lee Key, Issuer, Audience, ExpiryHours
 
+        // La clave secreta debe tener al menos 256 bits para HMAC-SHA256
+        var key         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var expiry      = DateTime.UtcNow.AddHours(int.Parse(jwt["ExpiryHours"]!));
+
+        // Claims: datos que viajan dentro del token y pueden leerse sin ir a la BD
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, usuario.UsuCod.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub,   usuario.UsuCod.ToString()), // ID del usuario
             new Claim(JwtRegisteredClaimNames.Email, usuario.UsuMail),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim("usuNom", usuario.UsuNom),
+            new Claim(JwtRegisteredClaimNames.Jti,   Guid.NewGuid().ToString()), // ID único del token
+            new Claim("usuNom",    usuario.UsuNom),
             new Claim("usuNomLar", usuario.UsuNomLar),
-            new Claim("sgruCod", usuario.SgruCod.ToString())
+            new Claim("sgruCod",   usuario.SgruCod.ToString()) // grupo de seguridad del usuario
         };
 
         var token = new JwtSecurityToken(
-            issuer: jwt["Issuer"],
-            audience: jwt["Audience"],
-            claims: claims,
-            expires: expiry,
+            issuer:            jwt["Issuer"],
+            audience:          jwt["Audience"],
+            claims:            claims,
+            expires:           expiry,
             signingCredentials: credentials
         );
 
+        // Serializa el token al formato estándar: header.payload.signature (Base64URL)
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
