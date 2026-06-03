@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function LoginPage() {
     const { login } = useAuth();
@@ -12,6 +13,35 @@ export default function LoginPage() {
     const [form, setForm] = useState({ usuMail: '', usuCla: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const handleGoogleLogin = async (credentialResponse) => {
+        setLoading(true);
+        setError('');
+        try {
+            const res = await fetch('/api/auth/google', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ credential: credentialResponse.credential }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                setError(data.message || 'Error al iniciar sesión con Google.');
+                return;
+            }
+            login(data.token, {
+                usuCod: data.usuCod,
+                usuNom: data.usuNom,
+                usuNomLar: data.usuNomLar,
+                usuMail: data.usuMail,
+                sgruCod: data.sgruCod,
+            });
+            navigate('/', { replace: true });
+        } catch {
+            setError('No se pudo conectar con el servidor.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleChange = (e) => {
         setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -90,11 +120,8 @@ export default function LoginPage() {
                 <div className="w-full max-w-lg">
                     {/* Logo mobile */}
                     <div className="lg:hidden flex flex-col items-center mb-8">
-                        <div
-                            className="w-16 h-16 rounded-2xl flex items-center justify-center mb-3 shadow-lg"
-                            style={{ background: 'linear-gradient(145deg, #aa3bff, #7b1ed6)' }}
-                        >
-                            <img src="/dashboard-icon.png" alt="" className="w-10 h-10" />
+                        <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-3">
+                            <img src="/dashboard-icon.png" alt="" className="w-16 h-16" />
                         </div>
                         <span className="text-xl font-bold text-gray-900">Gestión Dashboard</span>
                     </div>
@@ -175,6 +202,26 @@ export default function LoginPage() {
                                 >
                                     {loading ? "Ingresando..." : "Ingresar"}
                                 </Button>
+
+                                <div className="relative my-2">
+                                    <div className="absolute inset-0 flex items-center">
+                                        <div className="w-full border-t border-gray-200" />
+                                    </div>
+                                    <div className="relative flex justify-center text-xs">
+                                        <span className="bg-white px-2 text-gray-400">o</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-center">
+                                    <GoogleLogin
+                                        onSuccess={handleGoogleLogin}
+                                        onError={() => setError('Error al iniciar sesión con Google.')}
+                                        size="large"
+                                        text="continue_with"
+                                        shape="rectangular"
+                                        width={900}
+                                    />
+                                </div>
                             </form>
                         </CardContent>
                     </Card>

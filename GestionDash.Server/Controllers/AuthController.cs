@@ -1,5 +1,6 @@
 using GestionDash.Server.Data;
 using GestionDash.Server.DTOs;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -59,6 +60,49 @@ public class AuthController : ControllerBase
             UsuNomLar  = usuario.UsuNomLar,
             UsuMail    = usuario.UsuMail,
             SgruCod    = usuario.SgruCod
+        });
+    }
+
+    // POST /api/auth/google
+    // Valida el ID Token emitido por Google y devuelve un JWT si el email está registrado en la BD.
+    [HttpPost("google")]
+    public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Credential))
+            return BadRequest(new { message = "Token de Google requerido." });
+
+        GoogleJsonWebSignature.Payload payload;
+        try
+        {
+            var settings = new GoogleJsonWebSignature.ValidationSettings
+            {
+                Audience = new[] { _config["Google:ClientId"] }
+            };
+            payload = await GoogleJsonWebSignature.ValidateAsync(request.Credential, settings);
+        }
+        catch
+        {
+            return Unauthorized(new { message = "Token de Google inválido." });
+        }
+
+        if (!payload.EmailVerified)
+            return Unauthorized(new { message = "La cuenta de Google no tiene el email verificado." });
+
+        var usuario = await _db.Usuarios.FirstOrDefaultAsync(u => u.UsuMail == payload.Email);
+
+        if (usuario == null)
+            return Unauthorized(new { message = "Usuario no registrado." });
+
+        var token = GenerateJwtToken(usuario);
+
+        return Ok(new LoginResponse
+        {
+            Token     = token,
+            UsuCod    = usuario.UsuCod,
+            UsuNom    = usuario.UsuNom,
+            UsuNomLar = usuario.UsuNomLar,
+            UsuMail   = usuario.UsuMail,
+            SgruCod   = usuario.SgruCod
         });
     }
 
